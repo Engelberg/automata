@@ -39,10 +39,10 @@
 ; ignoring negative numbers that make things "too negative".
 ; Return the highest sum you saw.
 
-; This strategy can be implemented in only three lines of Clojure:
-(defn maximum-segment-sum [s]
-  (let [step (fn [segment-sum n] (max 0 (+ segment-sum n)))]
-    (apply max (reductions step 0 s))))
+; This strategy can be implemented concisely in Clojure:
+(defn maximum-segment-sum [s] 
+  (apply max (reductions (comp #(max 0 %) +) 0 s)))
+
 
 ; So, for example, when processing [-1 2 3 -4 5 -8 4], 
 ; (reductions step 0 s) is [0 0 2 5 1 6 0 4], and 6 is the max of that 
