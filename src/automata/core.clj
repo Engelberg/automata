@@ -184,10 +184,10 @@
 ; Next, I'll show how to do this more generally in automat.
 
 (defn maximum-non-segment-sum [s]
-  (let [transitions {:s0 {0 :s0, 1 :s1},
-                     :s1 {0 :s2, 1 :s1},
-                     :s2 {0 :s2, 1 :s3},
-                     :s3 {0 :s3, 1 :s3}},
+  (let [transitions {:q0 {0 :q0, 1 :q1},
+                     :q1 {0 :q2, 1 :q1},
+                     :q2 {0 :q2, 1 :q3},
+                     :q3 {0 :q3, 1 :q3}},
         
         step-state-sum-map     ; the reducing function
         (fn [state-sum-map n]
@@ -196,7 +196,7 @@
                                             {((transitions state) 1) (+ sum n)}])
                          state-sum-map)))]
     
-  (get (reduce step-state-sum-map {:s0 0} s) :s3)))
+  (get (reduce step-state-sum-map {:q0 0} s) :q3)))
 
 ; This works too, but is one pass, O(n), very fast.  Try it at the REPL.
 ;=> (maximum-non-segment-sum [1 2 3 -4 5 -8 4])
