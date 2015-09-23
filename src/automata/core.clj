@@ -101,24 +101,26 @@
 ; tracks the maximum sum we can get ending in a given state of our state machine.
 ; At the end of the pass, the value associated with the accepting state is our answer.
 
-; This is easiest to understand by just implementing in terms of state ids and transitions.
-; By viewing the map of the automat-produced state machine, we can
-; just encode the transitions directly with Clojure maps.
+; Getting at the individual states and transitions of the automaton produced by automat
+; is tricky, so for clarity, I've implemented this next function by simply
+; encoding the states and transitions directly with Clojure maps 
+; (where states are keywords, transitions are numbers 0 or 1)
+; Next, I'll show how to do this more generally in automat.
 
-(def transitions
-  {:s0 {0 :s0, 1 :s1},
-   :s1 {0 :s2, 1 :s1},
-   :s2 {0 :s2, 1 :s3},
-   :s3 {0 :s3, 1 :s3}})
-
-(defn step-state-sum-map [state-sum-map n]
-  (apply merge-with max
-         (mapcat (fn [[state sum]] [{((transitions state) 0) sum}
-                                    {((transitions state) 1) (+ sum n)}])
-                 state-sum-map)))
-                                    
 (defn maximum-non-segment-sum [s]
-  (get (reduce step-state-sum-map {:s0 0} s) :s3))
+  (let [transitions {:s0 {0 :s0, 1 :s1},
+                     :s1 {0 :s2, 1 :s1},
+                     :s2 {0 :s2, 1 :s3},
+                     :s3 {0 :s3, 1 :s3}},
+        
+        step-state-sum-map     ; the reducing function
+        (fn [state-sum-map n]
+          (apply merge-with max
+                 (mapcat (fn [[state sum]] [{((transitions state) 0) sum}
+                                            {((transitions state) 1) (+ sum n)}])
+                         state-sum-map)))]
+    
+  (get (reduce step-state-sum-map {:s0 0} s) :s3)))
 
 ; Now for the grand finale, we want to find the maximum-sum from an arbitrary bitmask regex
 ; Using instaparse in conjunction with the automat library, 
@@ -143,7 +145,7 @@
    :star auto/*
    :digit (fn [x] (if (= x "0") 0 1))})
 
-(defn parse-bitmask-regex [regex-string]
+(defn- parse-bitmask-regex [regex-string]
   (auto/compile (insta/transform bitmask-transform (bitmask-parser regex-string))))
 
 ; Unfortunately, automat's advance function is too high-level for what we want to do
@@ -160,9 +162,9 @@
   (let [automaton (parse-bitmask-regex bitmask-regex-string)
         fsm (:fsm (meta automaton))
         start (start-state automaton),
-        accepts (accept-states automaton),
+        accepts (accept-states automaton), ; Note there can be more than one accepting state
         
-        step-state-sum-map
+        step-state-sum-map  ; the reducing function
         (fn [state-sum-map n]
           (apply merge-with max
                  (mapcat (fn [[state sum]] [{(fsm/next-state fsm state 0) sum}
@@ -171,6 +173,11 @@
         
         final (reduce step-state-sum-map {start 0} s) ]
     (apply max (map #(get final %) accepts))))
+
+;=> (maximum-sum "0*1+0+1(0|1)*" [1 2 3 -4 5 -8 4])
+;15
+;=> (maximum-sum "0*1*0*" [1 2 3 -4 5 -8 4])
+;7
              
 ; reduce-fsm isn't a very good fit for this problem, because it is focused more on
 ; using automata to perform reductions, and doesn't give us the option of
