@@ -43,7 +43,6 @@
 (defn maximum-segment-sum [s] 
   (apply max (reductions (comp #(max 0 %) +) 0 s)))
 
-
 ; So, for example, when processing [-1 2 3 -4 5 -8 4], 
 ; (reductions step 0 s) is [0 0 2 5 1 6 0 4], and 6 is the max of that 
 
