@@ -288,7 +288,7 @@
         
         step-state-sum-map  ; the reducing function
         (fn [state-sum-map n]
-          (apply merge-with max-sum-mask
+          (apply merge-with (partial max-key :sum)
                  (mapcat (fn [[state sum-mask]] [{(fsm/next-state fsm state 0) 
                                                   (add-to-sum-mask sum-mask 0 0)}
                                                  {(fsm/next-state fsm state 1)
