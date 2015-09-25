@@ -195,7 +195,7 @@
                  (mapcat (fn [[state sum]] [{((transitions state) 0) sum}
                                             {((transitions state) 1) (+ sum n)}])
                          state-sum-map)))]
-    
+
   (get (reduce step-state-sum-map {:q0 0} s) :q3)))
 
 ; This works too, but is one pass, O(n), very fast.  Try it at the REPL.
@@ -204,8 +204,8 @@
 
 ;; GENERALIZING TO OTHER MAXIMUM SUM PROBLEMS
 
-; The above O(n) strategy works for any maximum sum problem where the
-; subsequence constraint can be specified by a regular expression.
+; The amazing thing is that the above O(n) strategy works for *any* maximum sum problem 
+; where the subsequence constraint can be specified by a regular expression.
 ; So, for the grand finale, let's find the maximum-sum from an arbitrary bitmask regex
 
 ; Using instaparse in conjunction with the automat library, 
