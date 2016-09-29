@@ -202,6 +202,23 @@
 ;=> (maximum-non-segment-sum [1 2 3 -4 5 -8 4])
 ;15
 
+; The above formulation is a great way to see how to generalize the program to other
+; maximum sum problems (which we'll do in just a moment), but it is worth noting
+; that we can make the above code even more concise by just encoding it directly
+; as updates to three accumulator variables (tracking q0 isn't really necessary)
+
+(defn maximum-non-segment-sum-concise [s]
+  (loop [s s, q1 Double/NEGATIVE_INFINITY, q2 Double/NEGATIVE_INFINITY, q3 Double/NEGATIVE_INFINITY]
+    (if-let [n (first s)] (recur (next s) (max n (+ n q1)) (max q1 q2) (max (+ q2 n) q3 (+ q3 n))) 
+      q3)))
+
+; Note that the above version returns NEGATIVE_INFINITY rather than nil if passed a sequence with
+; two or fewer elements, but otherwise, the implementation is equivalent.
+; It's pretty impressive that after all the analysis is said and done, you can express
+; the solution in just a few lines of code.
+
+; But now, let's return to the less concise version, and look at how to generalize it.
+        
 ;; GENERALIZING TO OTHER MAXIMUM SUM PROBLEMS
 
 ; The amazing thing is that the above O(n) strategy works for *any* maximum sum problem 

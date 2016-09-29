@@ -11,3 +11,4 @@ pom.xml.asc
 *.prefs
 bin/automata/core.clj
 bin/automata/core_test.clj
+/bin/
